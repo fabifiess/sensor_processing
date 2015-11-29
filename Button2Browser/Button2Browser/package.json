@@ -1,0 +1,10 @@
+{
+  "name": "Sensor2Web",
+  "version": "0.0.1",
+  "description": "Press the physical button and see your web page turn green",
+  "dependencies": {
+    "express": "4.3.1",
+    "socket.io": "^1.0.2",
+    "serialport": "^1.6.3"
+  }
+}

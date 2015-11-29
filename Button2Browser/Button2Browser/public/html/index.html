@@ -1,0 +1,19 @@
+<html>
+<head>
+    <script src="../js/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+<script>
+    var socket = io();
+    socket.on('booleanState', function (msg) {
+        var received = msg.trim();
+        if (received == "1")
+            $("body").css("background-color", "green");
+        if (received == "0")
+            $("body").css("background-color", "red");
+    });
+</script>
+</body>
+</html>
