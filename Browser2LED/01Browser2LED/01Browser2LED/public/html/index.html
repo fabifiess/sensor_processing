@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>Browser 2 LED</title>
+    <script src="../js/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+<button id="led">Switch LED</button>
+<script>
+    var toggle = 0;
+    var socket = io();
+    $('#led').click(function () {
+        var buttonState;
+        toggle += 1;
+        toggle %= 2;
+        if (toggle == 1)buttonState = "1";
+        if (toggle == 0)buttonState = "0";
+        socket.emit("toggleLED", buttonState);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<html>
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js">
+    </script>
+</head>
+<body>
+<br> <b>Add sweet</b>
+<div>Type: <input type='text' id='type' value=''></div>
+<div>Qty: <input type='text' id='qty' value=''></div>
+<button id='save'> Add & Show list</button>
+<ul id='list'></ul>
+
+<script>
+    var socket = io();
+
+    // Insert data
+    $('#save').click(function () {
+        var data = {
+            type: $('#type').val(),
+            qty: $('#qty').val()
+        };
+        socket.emit('toServer', data);
+
+        $('#type').val('');	// empty textfields again
+        $('#qty').val('');
+    });
+
+    // Pull data
+    socket.on('toClient', function (data) {
+        var list = "";
+        $.each(data, function (i, obj) {
+            list += "<li>" + obj.qty + "x " + obj.type + "</li>";
+        });
+        $('#list').html(list);
+    });
+</script>
+</body>
+</html>
