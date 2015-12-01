@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title> Web 2 RGB </title>
+    <link type="text/css" rel="stylesheet" href="../css/colorPicker.css"/>
+    <script src="../js/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../js/colorPicker.js"></script>
+</head>
+
+<body>
+<input type="text" id="ColorChooser"/>
+
+<br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/>
+
+<div id='rgb' style="color:white"> RGB-Wert</div>
+
+<script>
+    var actualColor;
+    var socket;
+
+    window.onload = function () {
+        socket = io();
+    };
+
+    $(function () {
+        $('#ColorChooser').wheelColorPicker({layout: 'block', quality: .5});
+    });
+
+    setInterval(function () {
+        var prevcolor = actualColor;
+        actualColor = $('#ColorChooser').wheelColorPicker('getValue');
+        if (actualColor != prevcolor) {
+            socket.emit('farbe_ClientToServer', actualColor);
+        }
+    }, 100);
+</script>
+</body>
+</html>

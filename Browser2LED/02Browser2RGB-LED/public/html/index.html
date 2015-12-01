@@ -9,31 +9,53 @@
 </head>
 
 <body>
-<input type="text" id="ColorChooser"/>
-
-<br/> <br/> <br/> <br/> <br/> <br/> <br/> <br/>
-
-<div id='rgb' style="color:white"> RGB-Wert</div>
+<img id="colorSource" src="../img/farbrad.png">
+<pre id="textOutput"></pre>
 
 <script>
-    var actualColor;
-    var socket;
+    var socket = io();
+    var actualColor=000000;
 
-    window.onload = function () {
-        socket = io();
-    };
+    // prevent image from moving while dragging on it
+    $('#colorSource').on('dragstart', function (event) {
+        event.preventDefault();
+    });
 
-    $(function () {
-        $('#ColorChooser').wheelColorPicker({layout: 'block', quality: .5});
+    $('#colorSource').mousedown(function (e) {
+        if (!this.canvas) {
+            this.canvas = $('<canvas />')[0];
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+            this.canvas.getContext('2d').drawImage(this, 0, 0, this.width, this.height);
+        }
+        var pixelData = this.canvas.getContext('2d').getImageData(event.offsetX, event.offsetY, 1, 1).data;
+        actualColor = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+        $('#textOutput').html(actualColor);
     });
 
     setInterval(function () {
-        var prevcolor = actualColor;
-        actualColor = $('#ColorChooser').wheelColorPicker('getValue');
-        if (actualColor != prevcolor) {
+//        var prevColor = actualColor;
+        if (actualColor != null) {
+//            if (actualColor != prevColor) {
+            console.log(actualColor);
             socket.emit('farbe_ClientToServer', actualColor);
+//            }
         }
-    }, 100);
+    }, 200);
+
+
+
+    // RGB to Hex
+
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    function rgbToHex(r, g, b) {
+        return componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
 </script>
+
 </body>
 </html>

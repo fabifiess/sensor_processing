@@ -35,10 +35,9 @@ serialport.open(function () {
 });
 
 io.on('connection', function (socket) {
-    socket.on('farbe_ClientToServer', function (data_Browser2Arduino) {
-        console.log('Color: ' + data_Browser2Arduino);
+    socket.on('farbe_ClientToServer', function (data) {
+        console.log('Color: ' + data);
         //send to Arduino
-        serialport.write(data_Browser2Arduino);
+        serialport.write(data);
     });
 });
-
