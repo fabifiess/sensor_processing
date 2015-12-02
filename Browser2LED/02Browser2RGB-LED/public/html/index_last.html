@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title> Web 2 RGB </title>
+    <link type="text/css" rel="stylesheet" href="../css/colorPicker.css"/>
+    <script src="../js/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="../js/colorPicker.js"></script>
+</head>
+
+<body>
+<img id="colorSource" src="../img/farbrad.png">
+<pre id="textOutput"></pre>
+
+<script>
+    var socket = io();
+    var actualColor=000000;
+
+    // prevent image from moving while dragging on it
+    $('#colorSource').on('dragstart', function (event) {
+        event.preventDefault();
+    });
+
+    $('#colorSource').mousedown(function (e) {
+        if (!this.canvas) {
+            this.canvas = $('<canvas />')[0];
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+            this.canvas.getContext('2d').drawImage(this, 0, 0, this.width, this.height);
+        }
+        var pixelData = this.canvas.getContext('2d').getImageData(event.offsetX, event.offsetY, 1, 1).data;
+        actualColor = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
+        $('#textOutput').html(actualColor);
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+    setInterval(function () {
+//        var prevColor = actualColor;
+        if (actualColor != null) {
+//            if (actualColor != prevColor) {
+            console.log(actualColor);
+            socket.emit('farbe_ClientToServer', actualColor);
+//            }
+        }
+    }, 200);
+
+
+
+    // RGB to Hex
+
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    function rgbToHex(r, g, b) {
+        return componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
+</script>
+
+</body>
+</html>

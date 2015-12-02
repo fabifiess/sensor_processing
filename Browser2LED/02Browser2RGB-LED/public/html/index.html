@@ -1,72 +1,130 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title> Web 2 RGB </title>
-    <link type="text/css" rel="stylesheet" href="../css/colorPicker.css"/>
+    <title> Browser 2 RGB </title>
     <script src="../js/jquery-1.11.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="../js/colorPicker.js"></script>
 </head>
 
 <body>
-<img id="colorSource" src="../img/farbrad.png">
-<pre id="textOutput"></pre>
 
-<script>
-    var socket = io();
-    var actualColor=000000;
+<canvas id="canvas"></canvas>
+<div id="status"> 000000</div>
 
-    // prevent image from moving while dragging on it
-    $('#colorSource').on('dragstart', function (event) {
-        event.preventDefault();
-    });
+</body>
 
-    $('#colorSource').mousedown(function (e) {
-        if (!this.canvas) {
-            this.canvas = $('<canvas />')[0];
-            this.canvas.width = this.width;
-            this.canvas.height = this.height;
-            this.canvas.getContext('2d').drawImage(this, 0, 0, this.width, this.height);
+<script type="text/javascript">
+        var socket = io();
+    var actualColor="ffffff";
+    var prevColor = "000000";
+    var leftMButtonDown = false;
+
+
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var img = new Image();
+    img.src = "../img/farbrad.png";
+    img.onload = function () {
+        context.canvas.width = img.width;
+        context.canvas.height = img.height;
+        context.drawImage(img, 0, 0);
+    };
+
+    window.addEventListener('load', resize, false);
+    window.addEventListener('resize', resize, false); // JQuery: $(window).resize(function() {...});
+
+
+
+
+    /**
+     * Scale proportionally: If the width of the canvas > the height, the canvas height
+     * equals the height of the browser window. Else, the canvas width equals the width of the browser window.
+     * If the window is resized, the size of the canvas changes dynamically.
+     */
+    function resize() {
+        var ratio = canvas.width / canvas.height;
+        var canvas_height = window.innerHeight;
+        var canvas_width = canvas_height * ratio;
+        if(canvas_width>window.innerWidth){
+            canvas_width=window.innerWidth;
+            canvas_height=canvas_width/ratio;
         }
-        var pixelData = this.canvas.getContext('2d').getImageData(event.offsetX, event.offsetY, 1, 1).data;
-        actualColor = rgbToHex(pixelData[0], pixelData[1], pixelData[2]);
-        $('#textOutput').html(actualColor);
+
+        canvas.style.width = canvas_width + 'px';
+        canvas.style.height = canvas_height + 'px';
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // only change the color onmousemove if simultaneously the left mouse button is pressed
+    $("#canvas").mousedown(function () {
+        leftMButtonDown = true;
+    });
+    $("#canvas").mouseup(function () {
+        leftMButtonDown = false;
     });
 
 
 
+    // get the color at the mouse position
+    $('#canvas').mousemove(function (e) {
+        if (leftMButtonDown == true) {
+            var pos = window.findPos(this);
+            var x = e.pageX - pos.x;
+            var y = e.pageY - pos.y;
+            var c = this.getContext('2d');
+            var p = c.getImageData(x, y, 1, 1).data;
+            actualColor = ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+            $('#status').html(actualColor);
+        }
+    });
 
 
-
-
-
-
+    // Respect blank space on top and on the left
+    function findPos(obj) {
+        var curleft = 0, curtop = 0;
+        if (obj.offsetParent) {
+            do {
+                curleft += obj.offsetLeft;
+                curtop += obj.offsetTop;
+            }
+            while (obj = obj.offsetParent);
+            return {x: curleft, y: curtop};
+        }
+        return undefined;
+    }
 
 
 
     setInterval(function () {
-//        var prevColor = actualColor;
-        if (actualColor != null) {
-//            if (actualColor != prevColor) {
-            console.log(actualColor);
+        if (actualColor != prevColor && actualColor != "000000") {
+            console.log("actualColor: " + actualColor + ", prevColor: " + prevColor);
             socket.emit('farbe_ClientToServer', actualColor);
-//            }
         }
-    }, 200);
+        prevColor = actualColor;
+    }, 150);
 
 
-
-    // RGB to Hex
+    function rgbToHex(r, g, b) {
+        return componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
 
     function componentToHex(c) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
     }
 
-    function rgbToHex(r, g, b) {
-        return componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
 </script>
 
-</body>
 </html>
