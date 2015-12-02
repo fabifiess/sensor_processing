@@ -23,8 +23,8 @@
             <file leaf-file-name="index_old.html" pinned="false" current-in-tab="true">
               <entry file="file://$PROJECT_DIR$/public/html/index_old.html">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state vertical-scroll-proportion="0.74277854">
-                    <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+                  <state vertical-scroll-proportion="0.88858324">
+                    <caret line="26" column="76" selection-start-line="26" selection-start-column="76" selection-end-line="26" selection-end-column="76" />
                     <folding />
                   </state>
                 </provider>
@@ -85,7 +85,7 @@
         <entry file="file://$PROJECT_DIR$/public/html/canvas.html">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.18317503">
-              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <caret line="5" column="100" selection-start-line="5" selection-start-column="100" selection-end-line="5" selection-end-column="100" />
               <folding />
             </state>
           </provider>
@@ -412,10 +412,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///Volumes/Scheune/Fabi/HdM/8. Semester/ICT Bachelor/ICT_Test-Grid/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.51994497">
+          <caret line="17" column="156" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="156" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/html/index_old.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.74277854">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.88858324">
+          <caret line="26" column="76" selection-start-line="26" selection-start-column="76" selection-end-line="26" selection-end-column="76" />
           <folding />
         </state>
       </provider>
@@ -423,7 +431,7 @@
     <entry file="file://$PROJECT_DIR$/public/html/canvas.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.18317503">
-          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <caret line="5" column="100" selection-start-line="5" selection-start-column="100" selection-end-line="5" selection-end-column="100" />
           <folding />
         </state>
       </provider>
