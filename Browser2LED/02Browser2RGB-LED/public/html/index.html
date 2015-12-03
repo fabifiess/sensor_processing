@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title> Browser 2 RGB </title>
+    <title> IMG 2 RGB-LED </title>
     <script src="../js/jquery-1.11.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -14,27 +14,25 @@
 </body>
 
 <script type="text/javascript">
-        var socket = io();
-    var actualColor="ffffff";
+    var socket = io();
+    var currentColor = "ffffff";
     var prevColor = "000000";
+    var margin = 50;
     var leftMButtonDown = false;
-
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     var img = new Image();
     img.src = "../img/farbrad.png";
     img.onload = function () {
-        context.canvas.width = img.width;
-        context.canvas.height = img.height;
-        context.drawImage(img, 0, 0);
+        context.canvas.width=img.width; // apply correct side proportions
+        context.canvas.height= img.height;
+        resize();
     };
 
-    window.addEventListener('load', resize, false);
-    window.addEventListener('resize', resize, false); // JQuery: $(window).resize(function() {...});
-
-
-
+    window.addEventListener('resize', function(){
+        resize();
+    });
 
     /**
      * Scale proportionally: If the width of the canvas > the height, the canvas height
@@ -45,76 +43,63 @@
         var ratio = canvas.width / canvas.height;
         var canvas_height = window.innerHeight;
         var canvas_width = canvas_height * ratio;
-        if(canvas_width>window.innerWidth){
-            canvas_width=window.innerWidth;
-            canvas_height=canvas_width/ratio;
+        if (canvas_width > window.innerWidth) {
+            canvas_width = window.innerWidth;
+            canvas_height = canvas_width / ratio;
         }
 
-        canvas.style.width = canvas_width + 'px';
-        canvas.style.height = canvas_height + 'px';
+        canvas.width = canvas_width-2*margin; // resize canvas
+        canvas.height = canvas_height-2*margin;
+        context.drawImage(img, 0, 0, canvas.width, canvas.height); // resize image on the canvas
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // only change the color onmousemove if simultaneously the left mouse button is pressed
+    // checks if the left mouse button is pressed
     $("#canvas").mousedown(function () {
         leftMButtonDown = true;
     });
+
     $("#canvas").mouseup(function () {
         leftMButtonDown = false;
     });
 
+    $("body").mouseup(function () {
+        leftMButtonDown = false;
+    });
 
-
-    // get the color at the mouse position
+    // get the color at the mouse position on mouse move, but only if the left mouse button is pressed
     $('#canvas').mousemove(function (e) {
         if (leftMButtonDown == true) {
-            var pos = window.findPos(this);
-            var x = e.pageX - pos.x;
-            var y = e.pageY - pos.y;
-            var c = this.getContext('2d');
-            var p = c.getImageData(x, y, 1, 1).data;
-            actualColor = ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
-            $('#status').html(actualColor);
+            getColorAtPos(e);
         }
     });
 
+    // get the color at the mouse position on click
+    $('#canvas').click(function(e){
+        getColorAtPos(e);
+    });
 
-    // Respect blank space on top and on the left
-    function findPos(obj) {
-        var curleft = 0, curtop = 0;
-        if (obj.offsetParent) {
-            do {
-                curleft += obj.offsetLeft;
-                curtop += obj.offsetTop;
-            }
-            while (obj = obj.offsetParent);
-            return {x: curleft, y: curtop};
+    function getColorAtPos(e){
+        var pos = {
+            x: canvas.offsetLeft,
+            y: canvas.offsetTop
         }
-        return undefined;
+        var x = e.pageX - pos.x;
+        var y = e.pageY - pos.y;
+        var c = canvas.getContext('2d');
+        var p = c.getImageData(x, y, 1, 1).data;
+        currentColor = ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
     }
 
-
-
     setInterval(function () {
-        if (actualColor != prevColor && actualColor != "000000") {
-            console.log("actualColor: " + actualColor + ", prevColor: " + prevColor);
-            socket.emit('farbe_ClientToServer', actualColor);
+        if (currentColor != prevColor && currentColor != "000000") {
+//            console.log("currentColor: " + currentColor + ", prevColor: " + prevColor);  // remove later
+            $('#canvas').css("background-color", "#" + currentColor);  // remove later
+            $('body').css("background-color", "#" + currentColor);  // remove later
+            $('#status').html(currentColor);
+            socket.emit('farbe_ClientToServer', currentColor); // send to server
         }
-        prevColor = actualColor;
-    }, 150);
-
+        prevColor = currentColor;
+    }, 100);
 
     function rgbToHex(r, g, b) {
         return componentToHex(r) + componentToHex(g) + componentToHex(b);
@@ -125,6 +110,7 @@
         return hex.length == 1 ? "0" + hex : hex;
     }
 
+    // get border around canvas
+    $('#canvas').css('margin',margin);
 </script>
-
 </html>
