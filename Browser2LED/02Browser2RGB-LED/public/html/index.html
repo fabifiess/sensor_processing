@@ -15,8 +15,14 @@
 
 <script type="text/javascript">
     var socket = io();
-    var currentColor = "ffffff";
+    var currentColor;
     var prevColor = "000000";
+
+    socket.on('updateCurrentColor',function(data){
+        currentColor = data;
+    });
+
+
     var margin = 50;
     var leftMButtonDown = false;
 

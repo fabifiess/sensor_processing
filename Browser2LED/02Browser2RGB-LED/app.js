@@ -11,6 +11,10 @@ app.get('/', function (req, res) {
     res.redirect('/html/index.html'); // alternative: res.sendfile('./public/html/index.html');
 });
 
+app.get('/t', function (req, res) {
+    res.redirect('/html/touchmove.html');
+});
+
 // Put the application on port 3000
 var port = 3000;
 http.listen(port, function () {
@@ -34,10 +38,14 @@ serialport.open(function () {
     console.log('Serial Port open on port ' + portname);
 });
 
+var currentColor = "000000";
+
 io.on('connection', function (socket) {
+    socket.emit('updateCurrentColor', currentColor);
     socket.on('farbe_ClientToServer', function (data) {
-        console.log('Color: ' + data);
-        //send to Arduino
-        serialport.write(data);
+        currentColor = data;
+        //console.log('Color: ' + currentColor);
+        serialport.write(currentColor); //send to Arduino
+        io.emit('updateCurrentColor', currentColor);
     });
 });
