@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>t2</title>
+    <script src="../js/jquery-1.11.1.js"></script>
+
+</head>
+<body>
+X: <div id="xPos">xPos</div>
+Y: <div id="yPos">yPos</div>
+</body>
+<script>
+    $(window).on("touchmove", function(ev) {
+        var e = ev.originalEvent;
+        e.preventDefault();
+        $('#xPos').text(e.targetTouches[0].offset);
+        $('#yPos').text(e.targetTouches[0].pageY);
+    });
+</script>
+</html>

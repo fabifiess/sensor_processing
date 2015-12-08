@@ -2,12 +2,19 @@
 <html>
 <head>
     <title> IMG 2 RGB-LED </title>
+    <link rel="shortcut icon" href="../img/favicon.ico">
     <script src="../js/jquery-1.11.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <style>
+        #canvas, body{
+            background-color: #000000;
+        }
+    </style>
 </head>
 
 <body>
 
+<div id="touch">touch</div>
 <canvas id="canvas"></canvas>
 <div id="status"> 000000</div>
 
@@ -78,6 +85,10 @@
             getColorAtPos(e);
         }
     });
+
+//    @todo implement touch gesture
+
+
 
     // get the color at the mouse position on click
     $('#canvas').click(function(e){

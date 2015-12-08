@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Serial Port Settings</title>
+    <script src="../js/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<h1>Choose your serial port</h1>
+<select id="serialPorts">
+    <option value="0" selected>Select serial port (COM Port)</option>
+</select>
+<button id="chooseSerialPort">Choose</button>
+<div id="feedback"></div>
+<br/>
+
+<h3>Issues finding the right serial port ("COM Port")?</h3>
+<h4>Alternative way 1</h4>
+
+<p>Open a terminal (console) application and type in following commands</p>
+
+<p><strong>Macintosh:</strong> <code>ls /dev/cu.*</code><br/>
+    <strong>Linux:</strong> <code>dmesg | grep tty</code><br/>
+    <strong>Windows:</strong> Open the application 'powershell' with the command <code>powershell</code>, then type
+    <code>[System.IO.Ports.SerialPort]::getportnames()</code>
+</p>
+<h4>Alternative way 2</h4>
+
+<p>Open the Arduino software and find the serial port under Tools > Serial Port</p>
+</body>
+
+<script>
+
+    var socket = io();
+
+    // Get list of serial ports from server
+    socket.on('serialport', function (data) {
+        var serialPorts = data;
+
+        // Fill select list
+        for (var i = 0; i < serialPorts.length; i++) {
+            $('#serialPorts').append('<option value=' + (i + 1) + '>' + serialPorts[i] + '</option>');
+        }
+    });
+
+    // get items from select list on button click
+    $('#chooseSerialPort').click(function () {
+        var selectedPort = $('#serialPorts').find(":selected");
+        if (selectedPort.val() == 0) {
+            $('#feedback').text("Select a serial port");
+        }
+        else if (selectedPort.val() != 0) {
+            socket.emit('serialport', selectedPort.text());
+
+            // get feedback from server
+            socket.on('sPortConnected', function (isConnected) {
+                if (isConnected == true)
+                    $('#feedback').text("Connection open on port " + selectedPort.text());
+            });
+        }
+    });
+
+
+</script>
+
+</html>
