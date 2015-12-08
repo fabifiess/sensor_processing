@@ -6,7 +6,7 @@
     <script src="../js/jquery-1.11.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        #canvas, body{
+        #canvas, body {
             background-color: #000000;
         }
     </style>
@@ -14,7 +14,10 @@
 
 <body>
 
-<div id="touch">touch</div>
+<div id="touchX">touchX</div>
+<div id="touchY">touchY</div>
+<div id="color">color</div>
+
 <canvas id="canvas"></canvas>
 <div id="status"> 000000</div>
 
@@ -25,7 +28,7 @@
     var currentColor;
     var prevColor = "000000";
 
-    socket.on('updateCurrentColor',function(data){
+    socket.on('updateCurrentColor', function (data) {
         currentColor = data;
     });
 
@@ -38,12 +41,12 @@
     var img = new Image();
     img.src = "../img/farbrad.png";
     img.onload = function () {
-        context.canvas.width=img.width; // apply correct side proportions
-        context.canvas.height= img.height;
+        context.canvas.width = img.width; // apply correct side proportions
+        context.canvas.height = img.height;
         resize();
     };
 
-    window.addEventListener('resize', function(){
+    window.addEventListener('resize', function () {
         resize();
     });
 
@@ -61,10 +64,14 @@
             canvas_height = canvas_width / ratio;
         }
 
-        canvas.width = canvas_width-2*margin; // resize canvas
-        canvas.height = canvas_height-2*margin;
+        canvas.width = canvas_width - 2 * margin; // resize canvas
+        canvas.height = canvas_height - 2 * margin;
         context.drawImage(img, 0, 0, canvas.width, canvas.height); // resize image on the canvas
     }
+
+
+
+
 
     // checks if the left mouse button is pressed
     $("#canvas").mousedown(function () {
@@ -75,33 +82,43 @@
         leftMButtonDown = false;
     });
 
-    $("body").mouseup(function () {
-        leftMButtonDown = false;
-    });
-
     // get the color at the mouse position on mouse move, but only if the left mouse button is pressed
     $('#canvas').mousemove(function (e) {
         if (leftMButtonDown == true) {
-            getColorAtPos(e);
+            getColorAtPos(e.pageX, e.pageY);
         }
     });
-
-//    @todo implement touch gesture
 
 
 
     // get the color at the mouse position on click
-    $('#canvas').click(function(e){
-        getColorAtPos(e);
+    $('#canvas').click(function (e) {
+        getColorAtPos(e.pageX, e.pageY);
     });
 
-    function getColorAtPos(e){
-        var pos = {
+
+    //@todo: too much delay! why?
+    // implement touch gesture
+    $('#canvas').on("touchmove", function (ev) {
+        var e = ev.originalEvent;
+        e.preventDefault();
+        getColorAtPos(e.targetTouches[0].pageX, e.targetTouches[0].pageY);
+        $('#touchX').text('canvasX: ' + e.targetTouches[0].pageX);
+        $('#touchY').text('canvasY: ' + e.targetTouches[0].pageY);
+        $('#color').text('color: ' + currentColor);
+
+        $('#canvas').css("background-color", "#" + currentColor);
+        $('body').css("background-color", "#" + currentColor);
+    });
+
+
+    function getColorAtPos(pageX, pageY) {
+        var canvasTopLeft = {
             x: canvas.offsetLeft,
             y: canvas.offsetTop
         }
-        var x = e.pageX - pos.x;
-        var y = e.pageY - pos.y;
+        var x = pageX - canvasTopLeft.x;
+        var y = pageY - canvasTopLeft.y;
         var c = canvas.getContext('2d');
         var p = c.getImageData(x, y, 1, 1).data;
         currentColor = ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
@@ -109,10 +126,10 @@
 
     setInterval(function () {
         if (currentColor != prevColor && currentColor != "000000") {
-//            console.log("currentColor: " + currentColor + ", prevColor: " + prevColor);  // remove later
-            $('#canvas').css("background-color", "#" + currentColor);  // remove later
-            $('body').css("background-color", "#" + currentColor);  // remove later
-            $('#status').html(currentColor);
+            $('#canvas').css("background-color", "#" + currentColor);
+            $('body').css("background-color", "#" + currentColor);
+            $('#status').text(currentColor);
+//            console.log("color: "+currentColor);
             socket.emit('farbe_ClientToServer', currentColor); // send to server
         }
         prevColor = currentColor;
@@ -128,6 +145,6 @@
     }
 
     // get border around canvas
-    $('#canvas').css('margin',margin);
+    $('#canvas').css('margin', margin);
 </script>
 </html>

@@ -13,21 +13,22 @@
 </select>
 <button id="chooseSerialPort">Choose</button>
 <div id="feedback"></div>
-<br/>
+<button id="help">Show tips</button>
+<div id='tips'>
+    <h3>Issues finding the right serial port ("COM Port")?</h3>
+    <h4>Alternative way 1</h4>
 
-<h3>Issues finding the right serial port ("COM Port")?</h3>
-<h4>Alternative way 1</h4>
+    <p>Open a terminal (console) application and type in following commands</p>
 
-<p>Open a terminal (console) application and type in following commands</p>
+    <p><strong>Macintosh:</strong> <code>ls /dev/cu.*</code><br/>
+        <strong>Linux:</strong> <code>dmesg | grep tty</code><br/>
+        <strong>Windows:</strong> Open the application 'powershell' with the command <code>powershell</code>, then type
+        <code>[System.IO.Ports.SerialPort]::getportnames()</code>
+    </p>
+    <h4>Alternative way 2</h4>
 
-<p><strong>Macintosh:</strong> <code>ls /dev/cu.*</code><br/>
-    <strong>Linux:</strong> <code>dmesg | grep tty</code><br/>
-    <strong>Windows:</strong> Open the application 'powershell' with the command <code>powershell</code>, then type
-    <code>[System.IO.Ports.SerialPort]::getportnames()</code>
-</p>
-<h4>Alternative way 2</h4>
-
-<p>Open the Arduino software and find the serial port under Tools > Serial Port</p>
+    <p>Open the Arduino software and find the serial port under Tools > Serial Port</p>
+</div>
 </body>
 
 <script>
@@ -61,7 +62,18 @@
         }
     });
 
-
+    $('#tips').hide();
+    var toggle_tips = 0;
+    $('#help').click(function () {
+        toggle_tips++;
+        if (toggle_tips % 2 == 1) {
+            $('#tips').show();
+            $('#help').text("Hide tips")
+        }
+        if (toggle_tips % 2 == 0) {
+            $('#tips').hide();
+            $('#help').text("Show tips")
+        }
+    });
 </script>
-
 </html>

@@ -4,18 +4,32 @@
     <meta charset="UTF-8">
     <title>t2</title>
     <script src="../js/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
 </head>
 <body>
-X: <div id="xPos">xPos</div>
-Y: <div id="yPos">yPos</div>
+X:
+<div id="xPos">xPos</div>
+Y:
+<div id="yPos">yPos</div>
+<canvas id="canvas" width='300' height='300' style="background-color: #00d6b2"></canvas>
 </body>
 <script>
-    $(window).on("touchmove", function(ev) {
+    var socket = io();
+
+    $('#canvas').on("touchmove", function (ev) {
         var e = ev.originalEvent;
         e.preventDefault();
-        $('#xPos').text(e.targetTouches[0].offset);
-        $('#yPos').text(e.targetTouches[0].pageY);
+        var canvasX = e.targetTouches[0].pageX - $('#canvas').offset().left;
+        var canvasY = e.targetTouches[0].pageY - $('#canvas').offset().top;
+        $('#xPos').text('canvasX: ' + canvasX);
+        $('#yPos').text('canvasY: ' + canvasY);
+        socket.emit("test", "ahoiX: " + canvasX);
+
+
+//        var c = canvas.getContext('2d');
+//        var p = c.getImageData(x, y, 1, 1).data;
+//        currentColor = ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
     });
 </script>
 </html>

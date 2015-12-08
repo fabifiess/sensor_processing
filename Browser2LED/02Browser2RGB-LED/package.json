@@ -4,6 +4,7 @@
   "description": "Choose a color in the color wheel on the web interface and see the color of the LED on your Arduino changing.",
   "dependencies": {
     "express": "4.3.1",
+    "indexof": "0.0.1",
     "serialport": "^1.6.3",
     "socket.io": "^1.0.2"
   }

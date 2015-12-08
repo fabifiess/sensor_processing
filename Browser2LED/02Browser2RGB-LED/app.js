@@ -12,8 +12,13 @@ app.get('/', function (req, res) {
 });
 
 app.get('/serial', function (req, res) {
-    res.redirect('/html/serialport.html'); // alternative: res.sendfile('./public/html/index.html');
+    res.redirect('/html/serialport.html');
 });
+
+app.get('/t', function (req, res) {
+    res.redirect('/html/touch2.html');
+});
+
 
 
 // Put the application on port 3000
@@ -36,14 +41,13 @@ serialPort.list(function (err, ports) {
     });
 });
 
-function connectToSerialPort(sPort) {
-
-
-}
+// @todo: load previous serial port from json
 
 var currentColor = "000000";
 
 io.on('connection', function (socket) {
+
+    // @todo: why does server break after tablet connected?
 
     // Serial Port Settings
     socket.emit("serialport", serialPortList);
@@ -78,4 +82,9 @@ io.on('connection', function (socket) {
         serialport.write(currentColor); //send to Arduino
         io.emit('updateCurrentColor', currentColor);
     });
+
+    // Test
+    socket.on("test",function(data){
+        console.log(data);
+    })
 });
