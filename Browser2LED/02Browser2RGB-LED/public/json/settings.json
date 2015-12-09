@@ -1,0 +1,9 @@
+{
+  "tcpPort": "3000",
+  "serialPort": "/dev/cu.usbmodemfd131",
+  "colors": [
+    "#ffffff",
+    "#ffff00",
+    "#db0031"
+  ]
+}
