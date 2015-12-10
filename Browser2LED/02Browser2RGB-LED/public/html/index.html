@@ -5,18 +5,24 @@
     <link rel="shortcut icon" href="../img/favicon.ico">
     <script src="../js/jquery-1.11.1.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+
     <style>
         #canvas, body {
             background-color: #000000;
+        }
+
+        #feld {
+            background-color: white;
         }
     </style>
 </head>
 
 <body>
-
-<div id="touchX">touchX</div>
-<div id="touchY">touchY</div>
-<div id="color">color</div>
+<div id="feld">
+    <div id="touchX">touchX</div>
+    <div id="touchY">touchY</div>
+    <div id="color">color</div>
+</div>
 
 <canvas id="canvas"></canvas>
 <div id="status"> 000000</div>
@@ -27,9 +33,12 @@
     var socket = io();
     var currentColor;
     var prevColor = "000000";
+    var isReady = false;
 
+    //synchronice current color on every device
     socket.on('updateCurrentColor', function (data) {
         currentColor = data;
+        isReady = true;
     });
 
 
@@ -68,8 +77,6 @@
         canvas.height = canvas_height - 2 * margin;
         context.drawImage(img, 0, 0, canvas.width, canvas.height); // resize image on the canvas
     }
-
-
 
 
 
@@ -122,16 +129,22 @@
         currentColor = ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
     }
 
-    setInterval(function () {
-        if (currentColor != prevColor && currentColor != "000000") {
-            $('#canvas').css("background-color", "#" + currentColor);
-            $('body').css("background-color", "#" + currentColor);
-            $('#status').text(currentColor);
-//            console.log("color: "+currentColor);
-            socket.emit('farbe_ClientToServer', currentColor); // send to server
+    setInterval(function(){
+        if (isReady == true) {  //bool
+            if (currentColor != prevColor && currentColor != "000000") {
+                $('#canvas').css("background-color", "#" + currentColor);
+                $('body').css("background-color", "#" + currentColor);
+                $('#status').text(currentColor);
+                socket.emit('farbe_ClientToServer', currentColor); // send to server
+            }
+            prevColor = currentColor;
         }
-        prevColor = currentColor;
     }, 100);
+
+
+
+
+
 
     function rgbToHex(r, g, b) {
         return componentToHex(r) + componentToHex(g) + componentToHex(b);

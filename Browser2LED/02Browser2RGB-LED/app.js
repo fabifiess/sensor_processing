@@ -28,7 +28,8 @@ var serialport;
 
 // Read settings from Json
 var saved_tcpPort;
-var saved_serialPort;
+var saved_serialportNr;
+var saved_baudrate;
 var jsonData;
 fs.readFile('./public/json/settings.json', function (err, data) {
     if (err) {
@@ -36,8 +37,8 @@ fs.readFile('./public/json/settings.json', function (err, data) {
     }
     jsonData = JSON.parse(data);
     saved_tcpPort = jsonData.tcpPort;
-    saved_serialPort = jsonData.serialPort;
-    console.log('saved_serialPort: ' + saved_serialPort);
+    saved_serialportNr = jsonData.serialPort;
+    saved_baudrate = jsonData.baudrate;
 
     // Put the application on port 3000
     http.listen(saved_tcpPort, function () {
@@ -55,23 +56,23 @@ fs.readFile('./public/json/settings.json', function (err, data) {
         //check if the pre-saved port is connected
         for (var i = 0; i < serialPortList.length; i++) {
             //console.log('serialPortList[i]: ' + serialPortList[i]);
-            if (serialPortList[i] == saved_serialPort) {
-                serialport = setupSerialPort(saved_serialPort);
+            if (serialPortList[i] == saved_serialportNr) {
+                serialport = setupSerialPort(saved_serialportNr, saved_baudrate);
                 serialport.open(function (error) {
                     if (!error) {
-                        console.log('Serial connection open on port ' + saved_serialPort);
+                        console.log('Serial connection open on port ' + saved_serialportNr);
                         console.log('Now open browser on http://localhost:' + saved_tcpPort);
                     }
                     else if (error) {
-                        console.log('Could not connect to ' + saved_serialPort);
+                        console.log('Could not connect to ' + saved_serialportNr);
                     }
                 });
                 break;
             }
         }
 
-        if (serialPortList[i] != saved_serialPort) {
-            console.log('Could not connect to ' + saved_serialPort);
+        if (serialPortList[i] != saved_serialportNr) {
+            console.log('Could not connect to ' + saved_serialportNr);
             console.log('Obviously you connect for the first time. Open browser on ' +
                         'http://localhost:' + saved_tcpPort + '/serial to choose the serial port');
         }
@@ -83,8 +84,7 @@ fs.readFile('./public/json/settings.json', function (err, data) {
 var currentColor = "000000";
 
 io.on('connection', function (socket) {
-
-    // @todo: why does server break after tablet connected?
+    console.log("new connection");
 
     // Serial Port Settings
     socket.emit("serialport", serialPortList);
@@ -128,10 +128,10 @@ io.on('connection', function (socket) {
     })
 });
 
-function setupSerialPort(sPort) {
-    var serialport = new SerialPort(sPort,
+function setupSerialPort(serialportNr, baudrate) {
+    var serialport = new SerialPort(serialportNr,
         {
-            baudrate: 9600,
+            baudrate: baudrate,
             parser: serialPort.parsers.readline("\n"),
             dataBits: 8,
             parity: 'none',
